@@ -1,10 +1,10 @@
 package constants;
 
+import java.time.LocalTime;
 import java.util.Map;
 
 public class BaseFareCalculator {
 
-    // Example tax rates for cities/states
     private static final Map<String, Double> CITY_STATE_TAX_RATES = Map.of(
             "Los Angeles, CA", 0.075,  // California
             "New York, NY", 0.085,    // New York
@@ -14,20 +14,26 @@ public class BaseFareCalculator {
             "Other", 0.05             // Default for other locations
     );
 
-    public static double calculatePrice(double baseFare, double fuelSurcharge, String cityState, double multiplier) {
-        // Step 1: Get the tax rate for the departure city/state
+    public static double calculatePrice(double baseFare, double fuelSurcharge, String cityState, double multiplier, LocalTime departureTime) {
         double taxRate = CITY_STATE_TAX_RATES.getOrDefault(cityState, CITY_STATE_TAX_RATES.get("Other"));
-
-        // Step 2: Calculate the taxes
         double taxes = baseFare * taxRate;
-
-        // Step 3: Add base fare, fuel surcharge, and taxes
         double totalCostBeforeMultiplier = baseFare + fuelSurcharge + taxes;
 
-        // Step 4: Apply the multiplier
-        double finalPrice = totalCostBeforeMultiplier * multiplier;
+        // Apply time-based multiplier
+        double timeMultiplier = getTimeMultiplier(departureTime);
+        double finalPrice = totalCostBeforeMultiplier * multiplier * timeMultiplier;
 
-        // Step 5: Return the rounded price
         return Math.round(finalPrice * 100.0) / 100.0;
     }
+
+    private static double getTimeMultiplier(LocalTime departureTime) {
+        if (departureTime.isBefore(LocalTime.of(9, 0))) { // Early morning (5:00 AM to 9:00 AM)
+            return 0.9;
+        } else if (departureTime.isBefore(LocalTime.of(17, 0))) { // Peak hours (9:01 AM to 5:00 PM)
+            return 1.2;
+        } else { // Late evening (5:01 PM to midnight)
+            return 1.0;
+        }
+    }
 }
+

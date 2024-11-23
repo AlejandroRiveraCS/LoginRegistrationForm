@@ -13,6 +13,7 @@ public class CommonConstants {
     // url of db -> jdbc:mysql:ip_address/schema-name
     public static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/login_schema";
 
+
     // username
     public static final String DB_USERNAME = "root";
 

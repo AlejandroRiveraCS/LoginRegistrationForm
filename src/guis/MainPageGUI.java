@@ -94,7 +94,7 @@ public class MainPageGUI extends Form {
 
         currentY += 60;
 
-        // Dates with JCalendar
+        // Dates with JDateChooser
         JLabel departLabel = new JLabel("Departure Date:");
         departLabel.setBounds(startX, currentY, componentWidth, 30);
         departLabel.setFont(new Font("Dialog", Font.PLAIN, 18));
@@ -141,7 +141,6 @@ public class MainPageGUI extends Form {
         adultsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         JComboBox<String> adultsDropdown = createPassengerDropdown();
 
-
         JLabel childrenLabel = new JLabel("Children:");
         childrenLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         JComboBox<String> childrenDropdown = createPassengerDropdown();
@@ -154,7 +153,6 @@ public class MainPageGUI extends Form {
         adultsLabel.setForeground(CommonConstants.TEXT_COLOR);
         childrenLabel.setForeground(CommonConstants.TEXT_COLOR);
 
-
         currentY += 60;
 
         // Search Button
@@ -164,18 +162,30 @@ public class MainPageGUI extends Form {
         searchButton.setBackground(CommonConstants.TEXT_COLOR);
         searchButton.setBounds(startX, currentY, componentWidth, 50);
         searchButton.addActionListener(e -> {
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-            String departDate = sdf.format(departDateChooser.getDate());
-            String returnDate = returnDateChooser.getDate() != null ? sdf.format(returnDateChooser.getDate()) : "N/A";
-            String adults = (String) adultsDropdown.getSelectedItem();
-            String children = (String) childrenDropdown.getSelectedItem();
-            JOptionPane.showMessageDialog(MainPageGUI.this,
-                    "Searching flights...\nDeparture: " + departDate +
-                            "\nReturn: " + returnDate +
-                            "\nAdults: " + adults +
-                            "\nChildren: " + children);
-            MainPageGUI.this.dispose();
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                String departDate = departDateChooser.getDate() != null ? sdf.format(departDateChooser.getDate()) : null;
+                String returnDate = returnDateChooser.getDate() != null ? sdf.format(returnDateChooser.getDate()) : "N/A";
 
+                if (departDate == null) {
+                    JOptionPane.showMessageDialog(this, "Please select a departure date.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String fromAirport = (String) fromDropdown.getSelectedItem();
+                String toAirport = (String) toDropdown.getSelectedItem();
+                String adults = (String) adultsDropdown.getSelectedItem();
+                String children = (String) childrenDropdown.getSelectedItem();
+
+                double baseFare = 200; // Example base fare
+                double fuelSurcharge = 50; // Example surcharge
+                String season = "summer"; // Example season
+
+                new FlightOptionsGUI(baseFare, fuelSurcharge, fromAirport, toAirport, season, departDateChooser.getDate()).setVisible(true);
+                MainPageGUI.this.dispose();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "An error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
         contentPanel.add(searchButton);
 
@@ -188,12 +198,9 @@ public class MainPageGUI extends Form {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // Customize scrolling speed
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
-        verticalScrollBar.setUnitIncrement(20); // Adjust unit increment (default is 16)
-        verticalScrollBar.setBlockIncrement(50); // Adjust block increment
+        verticalScrollBar.setUnitIncrement(20);
 
-        // Add the scroll pane to the frame
         getContentPane().add(scrollPane);
     }
 
@@ -213,7 +220,7 @@ public class MainPageGUI extends Form {
     private JComboBox<String> createPassengerDropdown() {
         String[] passengers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
         JComboBox<String> dropdown = new JComboBox<>(passengers);
-        dropdown.setMaximumRowCount(5); // Shows 5 options at a time
+        dropdown.setMaximumRowCount(5);
         return dropdown;
     }
 }
