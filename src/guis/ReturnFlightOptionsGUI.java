@@ -10,57 +10,55 @@ import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Date;
 
-public class FlightOptionsGUI extends Form {
+public class ReturnFlightOptionsGUI extends Form {
+    private final String departureFlightTime;
+    private final String departureClass;
+    private final double departurePrice;
+    private final String departureDate;
 
-    public FlightOptionsGUI() {
-        super("Flight Options");
-        setTitleBarIcon("C:\\Users\\alexr\\IdeaProjects\\LoginRegistrationFormkmk\\src\\A_realistic_image_of_an_airplane_flying_in_a_clear.jpeg");
-    }
+    public ReturnFlightOptionsGUI(double baseFare, double fuelSurcharge, String departureCity, String arrivalCity, String season,
+                                  Date departureDate, Date returnDate, String departureFlightTime, String departureClass, double departurePrice) {
+        super("Book Your Flight - Return Flight Options");
 
-    public FlightOptionsGUI(double baseFare, double fuelSurcharge, String departureCity, String arrivalCity, String season,
-                            Date travelDate, Date returnDate) {
-        super("Book Your Flight - Flight Options");
+        this.departureFlightTime = departureFlightTime;
+        this.departureClass = departureClass;
+        this.departurePrice = departurePrice;
+        this.departureDate = new SimpleDateFormat("MM/dd/yyyy").format(departureDate);
 
-        // Set up the window
         setSize(1100, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setLayout(new BorderLayout());
 
-        // Header Section
         JPanel headerPanel = new JPanel(new GridLayout(1, 1));
-        headerPanel.setBackground(new Color(70, 130, 180)); // Steel blue background
-        JLabel titleLabel = new JLabel("Flight Options", SwingConstants.CENTER);
+        headerPanel.setBackground(new Color(70, 130, 180)); // Steel blue
+        JLabel titleLabel = new JLabel("Return Flight Options", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
         titleLabel.setForeground(Color.WHITE);
         headerPanel.add(titleLabel);
         add(headerPanel, BorderLayout.NORTH);
 
-        // Combine perks table and flight options
         JPanel combinedPanel = new JPanel();
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
 
-        // Perks Table
         JTable perksTable = createPerksTable();
         JScrollPane perksScrollPane = new JScrollPane(perksTable);
         perksScrollPane.setBorder(BorderFactory.createTitledBorder("Perks"));
         combinedPanel.add(perksScrollPane);
 
-        // Flight Options Table
-        JTable flightOptionsTable = createFlightOptionsTable(baseFare, fuelSurcharge, departureCity, arrivalCity, season, travelDate, returnDate);
-        JScrollPane flightOptionsScrollPane = new JScrollPane(flightOptionsTable);
-        flightOptionsScrollPane.setBorder(BorderFactory.createTitledBorder("Flight Options"));
-        combinedPanel.add(flightOptionsScrollPane);
+        JTable returnFlightOptionsTable = createReturnFlightOptionsTable(baseFare, fuelSurcharge, departureCity, arrivalCity, season, returnDate);
+        JScrollPane returnFlightOptionsScrollPane = new JScrollPane(returnFlightOptionsTable);
+        returnFlightOptionsScrollPane.setBorder(BorderFactory.createTitledBorder("Return Flight Options"));
+        combinedPanel.add(returnFlightOptionsScrollPane);
 
         JScrollPane combinedScrollPane = new JScrollPane(combinedPanel);
         add(combinedScrollPane, BorderLayout.CENTER);
 
-        // Footer Section with Summary
         JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         footerPanel.setBackground(Color.WHITE);
         footerPanel.add(new JLabel("Departure: " + departureCity));
         footerPanel.add(new JLabel("Arrival: " + arrivalCity));
-        footerPanel.add(new JLabel("Date: " + new SimpleDateFormat("MM/dd/yyyy").format(travelDate)));
+        footerPanel.add(new JLabel("Date: " + this.departureDate));
         footerPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         add(footerPanel, BorderLayout.SOUTH);
 
@@ -84,50 +82,56 @@ public class FlightOptionsGUI extends Form {
         DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
         JTable table = new JTable(tableModel);
 
-        // Customize column widths
-        table.getColumnModel().getColumn(0).setPreferredWidth(350); // Perk Details
-        table.getColumnModel().getColumn(1).setPreferredWidth(200); // Economy
-        table.getColumnModel().getColumn(2).setPreferredWidth(200); // Basic
-        table.getColumnModel().getColumn(3).setPreferredWidth(200); // First Class
+        table.getColumnModel().getColumn(0).setPreferredWidth(350);
+        table.getColumnModel().getColumn(1).setPreferredWidth(200);
+        table.getColumnModel().getColumn(2).setPreferredWidth(200);
+        table.getColumnModel().getColumn(3).setPreferredWidth(200);
 
         table.setRowHeight(42);
-
         applyTableStyling(table);
 
         return table;
     }
 
-    private JTable createFlightOptionsTable(double baseFare, double fuelSurcharge, String departureCity, String arrivalCity,
-                                            String season, Date travelDate, Date returnDate) {
+    private JTable createReturnFlightOptionsTable(double baseFare, double fuelSurcharge, String departureCity, String arrivalCity,
+                                                  String season, Date returnDate) {
         String[] columnNames = {"Depart/Arrive Times", "Economy", "Basic", "First Class"};
 
-        Object[][] data = generateFlightOptionsData(baseFare, fuelSurcharge, departureCity, arrivalCity, season, travelDate);
+        Object[][] data = generateReturnFlightOptionsData(baseFare, fuelSurcharge, departureCity, arrivalCity, season, returnDate);
 
-        // Create a table model
         DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make all cells non-editable
+                return false;
             }
         };
 
         JTable table = new JTable(tableModel);
-        table.setRowHeight(40);
+        table.setRowHeight(42);
 
-        // Add custom button click behavior
         table.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int row = table.rowAtPoint(evt.getPoint());
                 int column = table.columnAtPoint(evt.getPoint());
-                if (column > 0) { // Price columns
-                    String flightTime = data[row][0].toString();
-                    String selectedClass = column == 1 ? "Economy" : column == 2 ? "Business" : "First Class";
-                    double price = Double.parseDouble(data[row][column].toString().replace("$", ""));
+                if (column > 0) {
+                    String returnFlightTime = data[row][0].toString();
+                    String selectedClass = column == 1 ? "Economy" : column == 2 ? "Basic" : "First Class";
+                    double returnPrice = Double.parseDouble(data[row][column].toString().replace("$", ""));
 
-                    // Navigate to ReturnFlightOptionsGUI
-                    new ReturnFlightOptionsGUI(baseFare, fuelSurcharge, departureCity, arrivalCity, season, travelDate, returnDate, flightTime, selectedClass, price).setVisible(true);
-                    dispose(); // Close current window
+                    new SummaryGUI(
+                            departureCity,
+                            arrivalCity,
+                            departureDate,
+                            new SimpleDateFormat("MM/dd/yyyy").format(returnDate),
+                            departureFlightTime,
+                            returnFlightTime,
+                            departureClass,
+                            selectedClass,
+                            departurePrice,
+                            returnPrice
+                    ).setVisible(true);
+                    dispose();
                 }
             }
         });
@@ -135,11 +139,11 @@ public class FlightOptionsGUI extends Form {
         return table;
     }
 
-    private Object[][] generateFlightOptionsData(double baseFare, double fuelSurcharge, String departureCity, String arrivalCity,
-                                                 String season, Date travelDate) {
+    private Object[][] generateReturnFlightOptionsData(double baseFare, double fuelSurcharge, String departureCity,
+                                                       String arrivalCity, String season, Date travelDate) {
         String[] departureTimes = {"6:00 AM", "10:00 AM", "2:00 PM", "6:00 PM", "10:00 PM"};
         String[] arrivalTimes = {"8:30 AM", "12:30 PM", "4:30 PM", "8:30 PM", "12:30 AM"};
-        double[] tierMultipliers = {1.0, 1.2, 1.5}; // Multipliers for Go Savvy, Go Comfy, Go Big
+        double[] tierMultipliers = {1.0, 1.2, 1.5};
 
         Object[][] data = new Object[departureTimes.length][4];
 

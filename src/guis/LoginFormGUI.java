@@ -11,14 +11,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class LoginFormGUI extends Form {
+
     public LoginFormGUI() {
         super("Login");
+        setTitleBarIcon("C:\\Users\\alexr\\IdeaProjects\\LoginRegistrationFormkmk\\src\\A_realistic_image_of_an_airplane_flying_in_a_clear.jpeg");
         addGuiComponents();
     }
 
     private void addGuiComponents() {
         // Create an image label
-        ImageIcon imageIcon = new ImageIcon("C:\\Users\\Alex\\IdeaProjects\\LoginRegistrationFormSQL\\src\\A_realistic_image_of_an_airplane_flying_in_a_clear.jpeg");
+        ImageIcon imageIcon = new ImageIcon("C:\\Users\\alexr\\IdeaProjects\\LoginRegistrationFormkmk\\src\\A_realistic_image_of_an_airplane_flying_in_a_clear.jpeg");
         Image image = imageIcon.getImage();
         Image scaledImage = image.getScaledInstance(350, getHeight(), Image.SCALE_SMOOTH); // Set width to 350
         ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
@@ -26,11 +28,9 @@ public class LoginFormGUI extends Form {
         imageLabel.setBounds(0, 0, 350, getHeight()); // Set bounds with width at 350
         add(imageLabel);
 
-
         // Adjust x-position of components to start after the image width (350)
         int startX = 550; // Start x-position after the image label
         int componentWidth = 350; // Set the width of the form components
-
 
         // Create login label
         JLabel loginLabel = new JLabel("Login");
@@ -88,11 +88,8 @@ public class LoginFormGUI extends Form {
                 } else {
                     JOptionPane.showMessageDialog(LoginFormGUI.this, "Login Failed...");
                 }
-
             }
         });
-
-
 
         add(loginButton);
 
@@ -111,26 +108,7 @@ public class LoginFormGUI extends Form {
         registerLabel.setBounds(startX + (componentWidth - 250) / 2, 600, 250, 30); // Center the label within the form width
         add(registerLabel);
     }
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

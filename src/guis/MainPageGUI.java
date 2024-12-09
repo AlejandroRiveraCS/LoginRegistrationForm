@@ -8,6 +8,7 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 
 public class MainPageGUI extends Form {
+
     public MainPageGUI() {
         super("Flight Search");
         addScrollableContent();
@@ -119,7 +120,12 @@ public class MainPageGUI extends Form {
 
         JDateChooser returnDateChooser = new JDateChooser();
         returnDateChooser.setBounds(startX, currentY, componentWidth, 40);
+        returnDateChooser.setEnabled(roundTripButton.isSelected()); // Enable only for round trips
         contentPanel.add(returnDateChooser);
+
+        // Enable/disable return date based on trip type
+        roundTripButton.addActionListener(e -> returnDateChooser.setEnabled(true));
+        oneWayButton.addActionListener(e -> returnDateChooser.setEnabled(false));
 
         currentY += 60;
 
@@ -165,10 +171,15 @@ public class MainPageGUI extends Form {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
                 String departDate = departDateChooser.getDate() != null ? sdf.format(departDateChooser.getDate()) : null;
-                String returnDate = returnDateChooser.getDate() != null ? sdf.format(returnDateChooser.getDate()) : "N/A";
+                String returnDate = returnDateChooser.getDate() != null ? sdf.format(returnDateChooser.getDate()) : null;
 
                 if (departDate == null) {
                     JOptionPane.showMessageDialog(this, "Please select a departure date.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (roundTripButton.isSelected() && returnDate == null) {
+                    JOptionPane.showMessageDialog(this, "Please select a return date for a round trip.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -181,7 +192,8 @@ public class MainPageGUI extends Form {
                 double fuelSurcharge = 50; // Example surcharge
                 String season = "summer"; // Example season
 
-                new FlightOptionsGUI(baseFare, fuelSurcharge, fromAirport, toAirport, season, departDateChooser.getDate()).setVisible(true);
+                new FlightOptionsGUI(baseFare, fuelSurcharge, fromAirport, toAirport, season,
+                        departDateChooser.getDate(), returnDateChooser.getDate()).setVisible(true);
                 MainPageGUI.this.dispose();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "An error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -210,17 +222,14 @@ public class MainPageGUI extends Form {
                 "Denver (DEN)", "Detroit (DTW)", "Houston (IAH)", "Las Vegas (LAS)", "Los Angeles (LAX)",
                 "Miami (MIA)", "Minneapolis (MSP)", "New York (JFK)", "Newark (EWR)", "Orlando (MCO)",
                 "Philadelphia (PHL)", "Phoenix (PHX)", "Salt Lake City (SLC)", "San Diego (SAN)",
-                "San Francisco (SFO)", "Seattle (SEA)", "Washington, D.C. (IAD)"
+                "San Francisco (SFO)", "Seattle (SEA)", "Tampa (TPA)", "Washington, D.C. (IAD)"
         };
-        JComboBox<String> comboBox = new JComboBox<>(airports);
-        comboBox.setMaximumRowCount(10); // Enable scrolling within the dropdown
-        return comboBox;
+        JComboBox<String> dropdown = new JComboBox<>(airports);
+        dropdown.setMaximumRowCount(10);
+        return dropdown;
     }
 
     private JComboBox<String> createPassengerDropdown() {
-        String[] passengers = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-        JComboBox<String> dropdown = new JComboBox<>(passengers);
-        dropdown.setMaximumRowCount(5);
-        return dropdown;
+        return new JComboBox<>(new String[]{"0", "1", "2", "3", "4", "5", "6"});
     }
 }

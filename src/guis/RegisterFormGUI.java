@@ -157,14 +157,3 @@ public class RegisterFormGUI extends Form {
         return password.equals(rePassword);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
